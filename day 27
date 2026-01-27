@@ -1,0 +1,40 @@
+class Solution {
+    Map<Integer, List<int[]>> mp;
+    public int minCost(int n, int[][] edges) {
+        mp = new HashMap<>();
+        for(int i = 0; i < n; i++) mp.put(i, new ArrayList<>());
+        for(int edge[] : edges){
+            int u = edge[0]; int v = edge[1]; int w = edge[2];
+            mp.get(u).add(new int[]{v, w});
+            mp.get(v).add(new int[]{u, 2 * w}); // Reversed Edge
+        }
+        return dijkstra(n);
+    }
+
+    public int dijkstra(int n){
+        int dist[] = new int[n];
+        Arrays.fill(dist, Integer.MAX_VALUE);
+        dist[0] = 0;
+
+        // {node, dist}
+        PriorityQueue<int[]> pq = new PriorityQueue<>((a, b) -> {
+            return a[1] - b[1];
+        });
+        pq.offer(new int[]{0, 0});
+
+        while(!pq.isEmpty()){
+            int[] temp = pq.poll();
+            int node = temp[0]; int currDist = temp[1];
+            if(dist[node] < currDist) continue;
+
+            for(int[] i : mp.get(node)){
+                int newDist = currDist + i[1];
+                if(dist[i[0]] > newDist){
+                    dist[i[0]] = newDist;
+                    pq.offer(new int[]{i[0], newDist});
+                }
+            }
+        }
+        return (dist[n - 1] == Integer.MAX_VALUE)? -1 : dist[n - 1];
+    }
+}
