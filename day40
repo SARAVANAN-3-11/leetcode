@@ -1,0 +1,41 @@
+static void inorder(struct TreeNode* node, struct TreeNode*** arr, int* sz, int* cap) {
+    if (node == NULL)
+        return;
+
+    inorder(node->left, arr, sz, cap);
+
+    if (*sz >= *cap) {
+        *cap *= 2;
+        *arr = realloc(*arr, sizeof(struct TreeNode*) * (*cap));
+    }
+
+    (*arr)[(*sz)++] = node;
+
+    inorder(node->right, arr, sz, cap);
+}
+
+static struct TreeNode* build(struct TreeNode** arr, int left, int right) {
+    if (left > right)
+        return NULL;
+    int mid = left + (right - left) / 2;
+    struct TreeNode* root = arr[mid];
+
+    root->left = build(arr, left, mid - 1);
+    root->right = build(arr, mid + 1, right);
+
+    return root;
+}
+
+struct TreeNode* balanceBST(struct TreeNode* root) {
+    if (root == NULL)
+        return NULL;
+    int cap = 1024;
+    int sz = 0;
+    struct TreeNode** arr =
+        (struct TreeNode**)malloc(sizeof(struct TreeNode*) * cap);
+    inorder(root, &arr, &sz, &cap);
+    struct TreeNode* res = build(arr, 0, sz - 1);
+
+    free(arr);
+    return res;
+}
