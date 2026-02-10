@@ -10,7 +10,6 @@ class Solution {
         }
         return dijkstra(n);
     }
-
     public int dijkstra(int n){
         int dist[] = new int[n];
         Arrays.fill(dist, Integer.MAX_VALUE);
