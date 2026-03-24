@@ -7,7 +7,6 @@ class Solution {
         long[][] mn = new long[m][n];
 
         mx[0][0] = mn[0][0] = grid[0][0];
-
         // first row
         for (int j = 1; j < n; j++) {
             mx[0][j] = mn[0][j] = mx[0][j - 1] * grid[0][j];
