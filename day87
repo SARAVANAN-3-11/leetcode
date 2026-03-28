@@ -1,0 +1,81 @@
+class Solution {
+    class DSU {
+        public int[] roots;
+        public int[] sizes;
+        DSU(int n) {
+            roots = new int[n];
+            sizes = new int[n];
+            for (int i = 0; i < n; i++) {
+                roots[i] = i;
+                sizes[i] = 1;
+            }
+        }
+
+        public int find(int a) {
+            int rootA = roots[a];
+            if (a == rootA) {
+                return a;
+            }
+            roots[a] = find(roots[a]);
+            return roots[a];
+        }
+
+        public void union(int a, int b) {
+            int rootA = find(a);
+            int rootB = find(b);
+            if (rootA == rootB) {
+                return;
+            }
+
+            if (sizes[rootA] > sizes[rootB]) {
+                roots[rootB] = rootA;
+                sizes[rootA] += sizes[rootB];
+            } else {
+                roots[rootA] = rootB;
+                sizes[rootB] += sizes[rootA];
+            }
+        }
+    }
+    public String findTheString(int[][] lcp) {
+        int n = lcp.length;
+        
+        DSU dsu = new DSU(n);
+        for (int i = 0; i < n; i++) {
+            for (int j = i+1; j < n; j++) {
+                if (lcp[i][j] > 0) {
+                    dsu.union(i, j);
+                }
+            }
+        }
+        char c = 'a';
+        char[] ch = new char[n];
+        
+        for (int i = 0; i < n; i++) {
+            int root = dsu.find(i);
+            if (ch[root] == 0) {    
+                if (c > 'z') {
+                    return "";
+                }
+                ch[root] = c;
+                c++;                
+            }
+            ch[i] = ch[root];
+        }
+        for (int start = n-1; start >= 0; start--) {
+            int i = start;
+            int j = n-1;
+            while (i >= 0 && j >= 0) {
+                int cnt = (ch[i] == ch[j]) ? 1 : 0;
+                if (j < (n-1) && cnt > 0) {
+                    cnt += lcp[i+1][j+1];
+                }
+                if (lcp[i][j] != cnt || lcp[j][i] != cnt) {
+                    return "";
+                }
+                i--;
+                j--;
+            }
+        }
+        return String.valueOf(ch);
+    }
+}
